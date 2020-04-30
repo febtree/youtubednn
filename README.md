@@ -1,2 +1,2 @@
 # youtubednn
-youtube dnn with ordinal regression model, movielens demo
+movielens recommendation model demo, using youtube dnn with ordinal regression model
