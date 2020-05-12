@@ -2,6 +2,11 @@ import conf
 import pandas as pd
 import numpy as np
 
+
+def genreNum(genres):
+    return len(genres.split("|"))
+
+
 # read dataframes
 ratingDtypes = {"uid": np.int16, "mid": np.int16, "ratings": np.float, "timestamp": np.int64}
 ratings = pd.read_csv(conf.DATA_DIR + "ratings.dat",
@@ -29,4 +34,14 @@ print("movies shape:", movies.shape)
 
 # join dataframs to get training data
 trainingSet = ratings.merge(users, how='left', on='uid').merge(movies, how='left', on='mid')
+trainingSet["genreNum"] = trainingSet["genres"].apply(genreNum)
+maxGenreNum = trainingSet["genreNum"].max()
+genreCols = ["gen"+str(i) for i in range(maxGenreNum)]
+trainingSet[genreCols] = trainingSet.genres.str.split("|", expand=True)
+features = genreCols + ["uid", "mid", "gender", "age", "occupation", "rating"]
+trainingSet = trainingSet[features]
 print(trainingSet.head(10))
+
+# encode to get samples
+genres = pd.unique(trainingSet[genreCols].values.ravel())
+print(genres)
